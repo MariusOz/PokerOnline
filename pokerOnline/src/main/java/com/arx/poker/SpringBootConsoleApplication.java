@@ -17,10 +17,8 @@ public class SpringBootConsoleApplication {
 	private static Logger LOG = LoggerFactory.getLogger(SpringBootConsoleApplication.class);
 
 	public static void main(String[] args) {
-		LOG.info("STARTING THE APPLICATION");
+		LOG.info("STARTING THE PokerOnline APPLICATION");
 		SpringApplication.run(SpringBootConsoleApplication.class, args);
-		LOG.info("APPLICATION FINISHED");
-		//test
 	}
 
 }

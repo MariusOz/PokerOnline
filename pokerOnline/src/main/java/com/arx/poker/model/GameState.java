@@ -1,7 +1,6 @@
 package com.arx.poker.model;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 import com.arx.poker.service.GameStateStatusEnum;
 import com.arx.poker.service.PhaseEnum;

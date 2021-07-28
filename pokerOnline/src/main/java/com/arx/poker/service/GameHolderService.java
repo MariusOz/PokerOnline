@@ -1,16 +1,13 @@
 package com.arx.poker.service;
 
 import java.util.ArrayList;
-
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.arx.poker.model.GameState;
-import com.arx.poker.model.Player;
 
 @Component
 public class GameHolderService {
