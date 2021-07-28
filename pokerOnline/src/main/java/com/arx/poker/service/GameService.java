@@ -13,12 +13,10 @@ import org.springframework.stereotype.Component;
 
 import com.arx.poker.model.Card;
 import com.arx.poker.model.GameDTO;
-import com.arx.poker.model.GameDTOWithoutPlayerId;
 import com.arx.poker.model.GameState;
 import com.arx.poker.model.Player;
-import com.arx.poker.model.Pot;
 import com.arx.poker.model.PlayerDTO;
-import com.arx.poker.model.PlayerDTOWithoutPlayerID;
+import com.arx.poker.model.Pot;
 
 @Component
 public class GameService {
@@ -324,45 +322,95 @@ public class GameService {
 		int totalBets = computePot(gs);
 
 		// pour chaque joueurs a la table on ajoute les informations publiques
-		ArrayList<PlayerDTO> playerInfos = new ArrayList<>();
-		for (Player p : gs.getPlayers()) {
-			boolean playerStillInRound = isPlayerStillInRound(p, gs);
-			PlayerDTO playerInfo = new PlayerDTO(p.getName(), p.getBet(), p.getFunds(), playerStillInRound,
-					p.getHasPlayed(), p.getId());
-			playerInfos.add(playerInfo);
-		}
-
-		if (playerId != null) {
-			Player player = searchPlayerById(gs, playerId);
-			return new GameDTO(gs.getId(), player.getName(), player.getPrivateHand(), cardsOnTable, totalBets,
-					playerInfos, gs.getCurrentPhase(), gs.getStatus(), gs.getCurrentRound());
-		} else {
-			return new GameDTO(gs.getId(), null, new ArrayList<>(), cardsOnTable, totalBets, playerInfos,
-					gs.getCurrentPhase(), gs.getStatus(), gs.getCurrentRound());
-		}
+				ArrayList<PlayerDTO> playerInfos = new ArrayList<>();
+				for (Player p : gs.getPlayers()) {
+					boolean playerStillInRound = isPlayerStillInRound(p, gs);
+					PlayerDTO playerInfo = new PlayerDTO();
+					playerInfo.setName(p.getName());
+					playerInfo.setBet(p.getBet());
+					playerInfo.setFunds(p.getFunds());
+					playerInfo.setStillInRound(playerStillInRound);
+					playerInfo.setHasPlayed(p.getHasPlayed());
+					playerInfo.setPlayerId(p.getId());
+					playerInfos.add(playerInfo);
+				}
+				
+				if (playerId != null) {
+					Player player = searchPlayerById(gs, playerId);
+					GameDTO game =  new GameDTO();
+					game.setGameId(gs.getId());
+					game.setName(player.getName());
+					game.setPlayerHand(player.getPrivateHand());
+					game.setCardsOnTable(cardsOnTable);
+					game.setTotalBets(totalBets);
+					game.setPlayerInfo(playerInfos);
+					game.setPhase(gs.getCurrentPhase());
+					game.setStatus(gs.getStatus());
+					game.setCurrentRound(gs.getCurrentRound());
+					
+					return game;
+				} else {
+					GameDTO game =  new GameDTO();
+					game.setGameId(gs.getId());
+					game.setName(null);
+					game.setPlayerHand(new ArrayList<>());
+					game.setCardsOnTable(cardsOnTable);
+					game.setTotalBets(totalBets);
+					game.setPlayerInfo(playerInfos);
+					game.setPhase(gs.getCurrentPhase());
+					game.setStatus(gs.getStatus());
+					game.setCurrentRound(gs.getCurrentRound());
+					return game;
+				}
 
 	}
 	
-	public GameDTOWithoutPlayerId gameStateToGameInfoWithoutId(GameState gs, Integer playerId) {
+	public GameDTO gameStateToGameInfoWithoutId(GameState gs, Integer playerId) {
 		ArrayList<Card> cardsOnTable = gs.getBoard().getCommunityCards();
 		int totalBets = computePot(gs);
 		
 		// pour chaque joueurs a la table on ajoute les informations publiques
-		ArrayList<PlayerDTOWithoutPlayerID> playerInfos = new ArrayList<>();
+		ArrayList<PlayerDTO> playerInfos = new ArrayList<>();
 		for (Player p : gs.getPlayers()) {
 			boolean playerStillInRound = isPlayerStillInRound(p, gs);
-			PlayerDTOWithoutPlayerID playerInfo = new PlayerDTOWithoutPlayerID(p.getName(), p.getBet(), p.getFunds(), playerStillInRound,
-					p.getHasPlayed());
+			PlayerDTO playerInfo = new PlayerDTO();
+			playerInfo.setName(p.getName());
+			playerInfo.setBet(p.getBet());
+			playerInfo.setFunds(p.getFunds());
+			playerInfo.setStillInRound(playerStillInRound);
+			playerInfo.setHasPlayed(p.getHasPlayed());
 			playerInfos.add(playerInfo);
 		}
 		
 		if (playerId != null) {
 			Player player = searchPlayerById(gs, playerId);
-			return new GameDTOWithoutPlayerId(gs.getId(), player.getName(), player.getPrivateHand(), cardsOnTable, totalBets,
-					playerInfos, gs.getCurrentPhase(), gs.getStatus(), gs.getCurrentRound());
+			GameDTO game =  new GameDTO();
+			game.setGameId(gs.getId());
+			game.setName(player.getName());
+			game.setPlayerHand(player.getPrivateHand());
+			game.setCardsOnTable(cardsOnTable);
+			game.setTotalBets(totalBets);
+			game.setPlayerInfo(playerInfos);
+			game.setPhase(gs.getCurrentPhase());
+			game.setStatus(gs.getStatus());
+			game.setCurrentRound(gs.getCurrentRound());
+			if(playerId == gs.getCurrentPlayer().getId()) {
+				game.setMyTurn(true);
+			}
+			
+			return game;
 		} else {
-			return new GameDTOWithoutPlayerId(gs.getId(), null, new ArrayList<>(), cardsOnTable, totalBets, playerInfos,
-					gs.getCurrentPhase(), gs.getStatus(), gs.getCurrentRound());
+			GameDTO game =  new GameDTO();
+			game.setGameId(gs.getId());
+			game.setName(null);
+			game.setPlayerHand(new ArrayList<>());
+			game.setCardsOnTable(cardsOnTable);
+			game.setTotalBets(totalBets);
+			game.setPlayerInfo(playerInfos);
+			game.setPhase(gs.getCurrentPhase());
+			game.setStatus(gs.getStatus());
+			game.setCurrentRound(gs.getCurrentRound());
+			return game;
 		}
 		
 	}
@@ -487,7 +535,7 @@ public class GameService {
 		}
 	}
 
-	public GameDTOWithoutPlayerId getGame(int gameId, Integer playerId) {
+	public GameDTO getGame(int gameId, Integer playerId) {
 		GameState gs = gameHolderService.accessSpecificGameState(gameId);
 		return gameStateToGameInfoWithoutId(gs, playerId);
 	}

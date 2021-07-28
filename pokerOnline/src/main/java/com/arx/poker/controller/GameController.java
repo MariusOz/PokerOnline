@@ -1,12 +1,8 @@
 package com.arx.poker.controller;
 
-import java.time.Duration;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,20 +10,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.arx.poker.model.GameDTO;
-import com.arx.poker.model.GameDTOWithoutPlayerId;
 import com.arx.poker.model.GameState;
-import com.arx.poker.model.Player;
 import com.arx.poker.model.PlayerDTO;
-import com.arx.poker.model.PlayerDTOWithoutPlayerID;
 import com.arx.poker.service.ActionEnum;
 import com.arx.poker.service.GameHolderService;
 import com.arx.poker.service.GameService;
-
-import reactor.core.publisher.Flux;
 
 @RestController
 @RequestMapping(value = "games")
@@ -53,7 +43,7 @@ public class GameController {
 	
 	@RequestMapping(value = "/{gameId}/player", method = RequestMethod.POST)
 	@ResponseBody
-	public PlayerDTO addPlayerToExistingGame(@PathVariable("gameId") Integer id, @RequestBody PlayerDTOWithoutPlayerID player) throws Exception {
+	public PlayerDTO addPlayerToExistingGame(@PathVariable("gameId") Integer id, @RequestBody PlayerDTO player) throws Exception {
 		// ajouter le nouveau joueur a l'arraylist de players pour la partie
 		return gameService.addPlayerToSpecificGame(id, player.getName());
 	}
@@ -67,7 +57,7 @@ public class GameController {
 	}
 	
 	@RequestMapping(value = "/{gameId}", method = RequestMethod.GET)
-	public GameDTOWithoutPlayerId game(@PathVariable("gameId") int gameId,@RequestParam("playerId") Integer playerId) {
+	public GameDTO game(@PathVariable("gameId") int gameId,@RequestParam("playerId") Integer playerId) {
 		return gameService.getGame(gameId, playerId);
 	}
 	

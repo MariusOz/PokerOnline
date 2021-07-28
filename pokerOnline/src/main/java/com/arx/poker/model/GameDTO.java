@@ -33,75 +33,98 @@ public class GameDTO {
 	
 	private int currentRound;
 
-	public GameDTO(int gameId, String name, ArrayList<Card> playerHand, ArrayList<Card> cardsOnTable, int totalBets,
-			ArrayList<PlayerDTO> playerInfo, PhaseEnum phase, GameStateStatusEnum status, int currentRound) {
-		this.gameId = gameId;
-		this.playerHand = playerHand;
-		this.cardsOnTable = cardsOnTable;
-		this.totalBets = totalBets;
-		this.playerInfo = playerInfo;
-		this.name = name;
-		this.phase = phase;
-		this.status = status;
-		this.currentRound = currentRound;
+	private boolean myTurn;
+
+	private int currentPlayerId;
+
+	public int getGameId() {
+		return gameId;
 	}
+
+	public void setGameId(int gameId) {
+		this.gameId = gameId;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
 	public List<Card> getPlayerHand() {
-		return Collections.unmodifiableList(playerHand);
+		return playerHand;
+	}
+
+	public void setPlayerHand(List<Card> playerHand) {
+		this.playerHand = playerHand;
 	}
 
 	public List<Card> getCardsOnTable() {
-		return Collections.unmodifiableList(cardsOnTable);
+		return cardsOnTable;
+	}
+
+	public void setCardsOnTable(List<Card> cardsOnTable) {
+		this.cardsOnTable = cardsOnTable;
 	}
 
 	public int getTotalBets() {
 		return totalBets;
 	}
 
-	public List<PlayerDTO> getPlayerInfo() {
-		return Collections.unmodifiableList(playerInfo);
-	}
-	
-	public String getName() {
-		return name;
-	}
-	public int getGameId() {
-		return gameId;
-	}
-	public void setGameId(int gameId) {
-		this.gameId = gameId;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
-	public void setPlayerHand(List<Card> playerHand) {
-		this.playerHand = playerHand;
-	}
-	public void setCardsOnTable(List<Card> cardsOnTable) {
-		this.cardsOnTable = cardsOnTable;
-	}
 	public void setTotalBets(int totalBets) {
 		this.totalBets = totalBets;
 	}
+
+	public List<PlayerDTO> getPlayerInfo() {
+		return playerInfo;
+	}
+
 	public void setPlayerInfo(List<PlayerDTO> playerInfo) {
 		this.playerInfo = playerInfo;
 	}
+
 	public PhaseEnum getPhase() {
 		return phase;
 	}
+
 	public void setPhase(PhaseEnum phase) {
 		this.phase = phase;
 	}
-	
+
 	public GameStateStatusEnum getStatus() {
 		return status;
 	}
+
 	public void setStatus(GameStateStatusEnum status) {
 		this.status = status;
 	}
+
 	public int getCurrentRound() {
 		return currentRound;
 	}
+
 	public void setCurrentRound(int currentRound) {
 		this.currentRound = currentRound;
 	}
+
+	public boolean isMyTurn() {
+		return myTurn;
+	}
+
+	public void setMyTurn(boolean myTurn) {
+		this.myTurn = myTurn;
+	}
+
+	public int getCurrentPlayerId() {
+		return currentPlayerId;
+	}
+
+	public void setCurrentPlayerId(int currentPlayerId) {
+		this.currentPlayerId = currentPlayerId;
+	}
+
+
+	
 }
