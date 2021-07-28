@@ -20,6 +20,7 @@ public class SpringBootConsoleApplication {
 		LOG.info("STARTING THE APPLICATION");
 		SpringApplication.run(SpringBootConsoleApplication.class, args);
 		LOG.info("APPLICATION FINISHED");
+		//test
 	}
 
 }
