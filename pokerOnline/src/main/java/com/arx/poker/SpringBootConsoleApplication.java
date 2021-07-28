@@ -15,7 +15,7 @@ import com.arx.poker.model.Player;
 import com.arx.poker.service.GameService;
 
 @SpringBootApplication 
-public class SpringBootConsoleApplication implements CommandLineRunner {
+public class SpringBootConsoleApplication {
 
 	@Autowired
 	private GameService gameService;
@@ -28,8 +28,4 @@ public class SpringBootConsoleApplication implements CommandLineRunner {
 		LOG.info("APPLICATION FINISHED");
 	}
 
-	@Override
-	public void run(String... args) throws IOException {
-		LOG.info("EXECUTING : command line runner");
-	}
 }
