@@ -1,5 +1,6 @@
 package com.arx.poker.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -124,10 +125,16 @@ public class GameService {
 
 	private Player findFirstPlayer(GameState gameState) {
 		Player player;
-		int nextPlayerIndex = (gameState.getPlayers().indexOf(gameState.getDealer()) + 3)
+		int index = 3;
+		
+		int nextPlayerIndex = (gameState.getPlayers().indexOf(gameState.getDealer()) + index)
 				% gameState.getPlayers().size();
-		player = gameState.getPlayers().get(nextPlayerIndex);
-		// TODO si player est tapi, trouver les prochain premier joueur
+		
+		while((player = gameState.getPlayers().get(nextPlayerIndex)).getFunds() <= 0) {
+			index++;
+			nextPlayerIndex = (gameState.getPlayers().indexOf(gameState.getDealer()) + index)
+					% gameState.getPlayers().size();
+		}
 		return player;
 
 	}
@@ -237,7 +244,21 @@ public class GameService {
 		}
 
 		// supprime les personnes sans fonds
-		gameState.getPlayers().removeIf(p -> p.getFunds() <= 0);
+		// supprimer les personnes 1 par 1 
+		// si la personne est le dealer, set new dealer et le supprimer ensuite 
+		List<Player> playersToBeEliminated = new ArrayList<>();
+		for (Player player : gameState.getPlayers()) {
+			if(player.getFunds() <= 0) {
+				playersToBeEliminated.add(player);
+			}
+		}
+		for (Player player : playersToBeEliminated) {
+			if(player.getId() == gameState.getDealer().getId()) {
+				// aller dans le sens inverse de findDealer pour ne pas sauter de tour
+				findDealer(gameState);
+			}
+			gameState.getPlayers().remove(player);
+		}
 	}
 
 	private void initRound(GameState gs) {
@@ -250,33 +271,35 @@ public class GameService {
 		gs.setCurrentPhase(PhaseEnum.PRE_FLOP);
 		gs.setCurrentRound(gs.getCurrentRound() + 1);
 		initPhase(gs);
+		
+		//remettre les joeurs couchés en jeu
+		for(Player p : gs.getPlayers()) {
+			if(p.getFunds() > 0 ) {
+				gs.getPlayersInGame().add(p);
+			}
+		}
 	}
 
 	private void initPhase(GameState gs) {
 
 		for (Player player : gs.getPlayersInGame()) {
 			player.setHasPlayed(false);
-		}
+		}	
+		gs.setCurrentPlayer(findFirstPlayer(gs));
+		gs.setBeginPlayerAction(LocalDateTime.now());
+		LOGGER.info(gs.getCurrentPhase().toString() + " : New first player is " + gs.getCurrentPlayer().getName());
 		switch (gs.getCurrentPhase()) {
 		case PRE_FLOP:
-			gs.setCurrentPlayer(findFirstPlayer(gs));
-			LOGGER.info("New first player is " + gs.getCurrentPlayer().getName());
 			break;
 		case FLOP:
-			gs.setCurrentPlayer(findFirstPlayer(gs));
-			LOGGER.info("New first player is " + gs.getCurrentPlayer().getName());
 			dealCardsOnBoard(gs);
 			dealCardsOnBoard(gs);
 			dealCardsOnBoard(gs);
 			break;
 		case TURN:
-			gs.setCurrentPlayer(findFirstPlayer(gs));
-			LOGGER.info("New first player is " + gs.getCurrentPlayer().getName());
 			dealCardsOnBoard(gs);
 			break;
 		case RIVER:
-			gs.setCurrentPlayer(findFirstPlayer(gs));
-			LOGGER.info("New first player is " + gs.getCurrentPlayer().getName());
 			dealCardsOnBoard(gs);
 			break;
 		default:
@@ -316,7 +339,7 @@ public class GameService {
 		return null;
 	}
 
-	public GameDTO gameStateToGameInfo(GameState gs, Integer playerId) {
+	public GameDTO gameStateToGameInfo(GameState gs, Integer playerId, boolean showId) {
 		ArrayList<Card> cardsOnTable = gs.getBoard().getCommunityCards();
 		int totalBets = computePot(gs);
 
@@ -330,7 +353,9 @@ public class GameService {
 			playerInfo.setFunds(p.getFunds());
 			playerInfo.setStillInRound(playerStillInRound);
 			playerInfo.setHasPlayed(p.getHasPlayed());
-			playerInfo.setPlayerId(p.getId());
+			if(showId) {
+				playerInfo.setPlayerId(p.getId());
+			}
 			playerInfos.add(playerInfo);
 		}
 		GameDTO game = new GameDTO();
@@ -349,6 +374,11 @@ public class GameService {
 		game.setPhase(gs.getCurrentPhase());
 		game.setStatus(gs.getStatus());
 		game.setCurrentRound(gs.getCurrentRound());
+		if(playerId !=null && gs.getCurrentPlayer() != null && gs.getCurrentPlayer().getId() == playerId) {
+			game.setMyTurn(true);
+		}else {
+			game.setMyTurn(false);
+		}
 		return game;
 	}
 
@@ -362,55 +392,6 @@ public class GameService {
 		return false;
 	}
 
-	public GameDTO gameStateToGameInfoWithoutId(GameState gs, Integer playerId) {
-		ArrayList<Card> cardsOnTable = gs.getBoard().getCommunityCards();
-		int totalBets = computePot(gs);
-
-		// pour chaque joueurs a la table on ajoute les informations publiques
-		ArrayList<PlayerDTO> playerInfos = new ArrayList<>();
-		for (Player p : gs.getPlayers()) {
-			boolean playerStillInRound = isPlayerStillInRound(p, gs);
-			PlayerDTO playerInfo = new PlayerDTO();
-			playerInfo.setName(p.getName());
-			playerInfo.setBet(p.getBet());
-			playerInfo.setFunds(p.getFunds());
-			playerInfo.setStillInRound(playerStillInRound);
-			playerInfo.setHasPlayed(p.getHasPlayed());
-			playerInfos.add(playerInfo);
-		}
-
-		if (playerId != null) {
-			Player player = searchPlayerById(gs, playerId);
-			GameDTO game = new GameDTO();
-			game.setGameId(gs.getId());
-			game.setName(player.getName());
-			game.setPlayerHand(player.getPrivateHand());
-			game.setCardsOnTable(cardsOnTable);
-			game.setTotalBets(totalBets);
-			game.setPlayerInfo(playerInfos);
-			game.setPhase(gs.getCurrentPhase());
-			game.setStatus(gs.getStatus());
-			game.setCurrentRound(gs.getCurrentRound());
-			if (playerId == gs.getCurrentPlayer().getId()) {
-				game.setMyTurn(true);
-			}
-
-			return game;
-		} else {
-			GameDTO game = new GameDTO();
-			game.setGameId(gs.getId());
-			game.setName(null);
-			game.setPlayerHand(new ArrayList<>());
-			game.setCardsOnTable(cardsOnTable);
-			game.setTotalBets(totalBets);
-			game.setPlayerInfo(playerInfos);
-			game.setPhase(gs.getCurrentPhase());
-			game.setStatus(gs.getStatus());
-			game.setCurrentRound(gs.getCurrentRound());
-			return game;
-		}
-
-	}
 
 	private boolean isPlayerStillInRound(Player player, GameState gameState) {
 		return gameState.getPlayersInGame().contains(player);
@@ -514,11 +495,11 @@ public class GameService {
 		GameState gs = gameHolderService.accessSpecificGameState(id);
 		Player p = createPlayer(gs, playerName);
 		gs.getPlayers().add(p);
-		gs.getPlayersInGame().add(p);
+		LOGGER.info(playerName + " has joined the game");
 		launchGameWhenReady(gs);
-		for (PlayerDTO player : gameStateToGameInfo(gs, p.getId()).getPlayerInfo()) {
+		for (PlayerDTO player : gameStateToGameInfo(gs, p.getId(), true).getPlayerInfo()) {
 			if (player.getName().equals(playerName)) {
-				LOGGER.info(player.getName() + " has joined the game");
+				
 				return player;
 			}
 		}
@@ -534,21 +515,24 @@ public class GameService {
 
 	public GameDTO getGame(int gameId, Integer playerId) {
 		GameState gs = gameHolderService.accessSpecificGameState(gameId);
-		return gameStateToGameInfoWithoutId(gs, playerId);
+		return gameStateToGameInfo(gs, playerId, false);
 	}
 
-	public void reactToPlayerAction(int gameId, Integer playerId, ActionEnum playerAction) {
+	public synchronized void reactToPlayerAction(int gameId, Integer playerId, ActionEnum playerAction) {
 		GameState gs = gameHolderService.accessSpecificGameState(gameId);
 		if (!GameStateStatusEnum.IN_PROGRESS.equals(gs.getStatus())) {
+			LOGGER.error(playerId + " ne peut pas jouer, le jeu n'est pas en cours");
 			throw new RuntimeException("This game is currently unavailable ");
 		}
 		if (gs.getCurrentPlayer().getId() != playerId) {
+			LOGGER.error(playerId + " ne peut pas jouer, ce n'est pas son tour");
 			throw new RuntimeException("It is not your turn to play !");
 		}
 
 		if (gs.getCurrentPlayer().getFunds() > 0) {
 			applyAction(playerAction, gs);
 		} else {
+			LOGGER.error(playerId + " ne peut pas jouer, il n'a plus de fonds");
 			throw new RuntimeException("Vous n'avez plus de fonds !");
 		}
 
@@ -558,6 +542,7 @@ public class GameService {
 			if (nextPlayer != null) {
 
 				gs.setCurrentPlayer(nextPlayer);
+				gs.setBeginPlayerAction(LocalDateTime.now());
 			} else {
 				// pas de prochain player, la phase est terminée
 				// mise en place de la prochaine phase ou fin du round
@@ -583,6 +568,7 @@ public class GameService {
 			// si terminer set statusEnum to ended sinon lance un nouveau round
 			if (gameOver(gs)) {
 				gs.setStatus(GameStateStatusEnum.ENDED);
+				LOGGER.info(gs.getPlayers().get(0).getName() + " a gagné !");
 			} else {
 				initRound(gs);
 			}
@@ -603,6 +589,7 @@ public class GameService {
 	private void applyAction(ActionEnum playerAction, GameState gs) {
 		// ATTENTION si le joueur mise la totalité de ses fonds il reste dans le jeu
 		// quand bien meme il ne peux plus surenchérir
+		LOGGER.info(gs.getCurrentPlayer().getName() + " joue " + playerAction.toString());
 		int maxBet = getMaxBet(gs);
 		if (ActionEnum.FOLLOW.equals(playerAction)) {
 			// TODO un joueur ne peux pas miser plus que ses fonds

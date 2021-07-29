@@ -38,7 +38,7 @@ public class GameController {
 	@PostMapping
 	public GameDTO createGame(@RequestParam("nbOfPlayer") int nbOfPlayer) throws Exception {
 		GameState gamestate = gameService.createGame(nbOfPlayer);
-		return gameService.gameStateToGameInfo(gamestate, null);
+		return gameService.gameStateToGameInfo(gamestate, null, false);
 	}
 	
 	@RequestMapping(value = "/{gameId}/player", method = RequestMethod.POST)
@@ -62,14 +62,14 @@ public class GameController {
 	}
 	
 	@RequestMapping(value  = "/{gameId}/play", method = RequestMethod.POST)
-	public void move(@PathVariable("gameId") int gameId,@RequestParam("playerId") Integer playerId, @RequestParam("playerAction") ActionEnum playerAction) {
+	public void move(@PathVariable("gameId") int gameId,@RequestParam("playerId") Integer playerId, @RequestParam("playerAction") String playerAction) {
 		// la partie dans laquel il joue
 		// verifier si le joueur qui joue est bien celui qui doit jouer 
 		// gérer son action (bet, fonds restants, stillInGame)
 		// passer au joueur d'après (si il existe) 
 		// fin prématurer du round?
 		// dernier round?
-		gameService.reactToPlayerAction(gameId, playerId, playerAction);
+		gameService.reactToPlayerAction(gameId, playerId, ActionEnum.valueOf(playerAction));
 	}
 	
 }

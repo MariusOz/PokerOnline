@@ -1,5 +1,6 @@
 package com.arx.poker.model;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import com.arx.poker.service.GameStateStatusEnum;
@@ -22,6 +23,8 @@ public class GameState {
 	private GameStateStatusEnum status = GameStateStatusEnum.WAITING;
 	private int nbOfPlayer;
 	private PhaseEnum currentPhase;
+	private LocalDateTime beginPlayerAction;
+
 
 	public GameState(int nbOfPlayer) {
 		deck = new ArrayList<Card>();
@@ -125,5 +128,13 @@ public class GameState {
 
 	public void setCurrentPhase(PhaseEnum currentPhase) {
 		this.currentPhase = currentPhase;
+	}
+	
+	public LocalDateTime getBeginPlayerAction() {
+		return beginPlayerAction;
+	}
+	
+	public void setBeginPlayerAction(LocalDateTime beginPlayerAction) {
+		this.beginPlayerAction = beginPlayerAction;
 	}
 }
