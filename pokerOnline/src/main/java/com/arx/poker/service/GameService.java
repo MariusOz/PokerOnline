@@ -129,17 +129,15 @@ public class GameService {
 	private Player findFirstPlayer(GameState gameState) {
 		Player player;
 		int index = 3;
-		
-		int nextPlayerIndex = (gameState.getPlayers().indexOf(gameState.getDealer()) + index)
-				% gameState.getPlayers().size();
-		
-		while((player = gameState.getPlayers().get(nextPlayerIndex)).getFunds() <= 0) {
-			index++;
-			nextPlayerIndex = (gameState.getPlayers().indexOf(gameState.getDealer()) + index)
-					% gameState.getPlayers().size();
-		}
-		return player;
 
+		do {
+			int nextPlayerIndex = (gameState.getPlayers().indexOf(gameState.getDealer()) + index)
+					% gameState.getPlayers().size();
+			player = gameState.getPlayers().get(nextPlayerIndex);
+			index++;
+		} while (player.getFunds() <= 0 && !gameState.getPlayersInGame().contains(player));
+
+		return player;
 	}
 
 	/**
@@ -247,16 +245,16 @@ public class GameService {
 		}
 
 		// supprime les personnes sans fonds
-		// supprimer les personnes 1 par 1 
-		// si la personne est le dealer, set new dealer et le supprimer ensuite 
+		// supprimer les personnes 1 par 1
+		// si la personne est le dealer, set new dealer et le supprimer ensuite
 		List<Player> playersToBeEliminated = new ArrayList<>();
 		for (Player player : gameState.getPlayers()) {
-			if(player.getFunds() <= 0) {
+			if (player.getFunds() <= 0) {
 				playersToBeEliminated.add(player);
 			}
 		}
 		for (Player player : playersToBeEliminated) {
-			if(player.getId() == gameState.getDealer().getId()) {
+			if (player.getId() == gameState.getDealer().getId()) {
 				// aller dans le sens inverse de findDealer pour ne pas sauter de tour
 				findDealer(gameState);
 			}
@@ -267,7 +265,7 @@ public class GameService {
 	private void initRound(GameState gs) {
 		gs.setCurrentRound(gs.getCurrentRound() + 1);
 		LOGGER.info("Début du round: " + gs.getCurrentRound());
-		
+
 		initDeck(gs);
 		gs.getBoard().getCommunityCards().clear();
 		dealCardsToPlayer(gs);
@@ -276,10 +274,11 @@ public class GameService {
 		betBlinds(gs);
 		gs.setCurrentPhase(PhaseEnum.PRE_FLOP);
 		initPhase(gs);
-		
-		//remettre les joeurs couchés en jeu
-		for(Player p : gs.getPlayers()) {
-			if(p.getFunds() > 0 ) {
+
+		// remettre les joeurs couchés en jeu
+		gs.getPlayersInGame().clear();
+		for (Player p : gs.getPlayers()) {
+			if (p.getFunds() > 0) {
 				gs.getPlayersInGame().add(p);
 			}
 		}
@@ -289,7 +288,7 @@ public class GameService {
 
 		for (Player player : gs.getPlayersInGame()) {
 			player.setHasPlayed(false);
-		}	
+		}
 		gs.setCurrentPlayer(findFirstPlayer(gs));
 		gs.setBeginPlayerAction(LocalDateTime.now());
 		LOGGER.info(gs.getCurrentPhase().toString() + " : New first player is " + gs.getCurrentPlayer().getName());
@@ -358,7 +357,7 @@ public class GameService {
 			playerInfo.setFunds(p.getFunds());
 			playerInfo.setStillInRound(playerStillInRound);
 			playerInfo.setHasPlayed(p.getHasPlayed());
-			if(showId) {
+			if (showId) {
 				playerInfo.setPlayerId(p.getId());
 			}
 			playerInfos.add(playerInfo);
@@ -379,9 +378,9 @@ public class GameService {
 		game.setPhase(gs.getCurrentPhase());
 		game.setStatus(gs.getStatus());
 		game.setCurrentRound(gs.getCurrentRound());
-		if(playerId !=null && gs.getCurrentPlayer() != null && gs.getCurrentPlayer().getId() == playerId) {
+		if (playerId != null && gs.getCurrentPlayer() != null && gs.getCurrentPlayer().getId() == playerId) {
 			game.setMyTurn(true);
-		}else {
+		} else {
 			game.setMyTurn(false);
 		}
 		return game;
@@ -396,7 +395,6 @@ public class GameService {
 		}
 		return false;
 	}
-
 
 	private boolean isPlayerStillInRound(Player player, GameState gameState) {
 		return gameState.getPlayersInGame().contains(player);
@@ -504,7 +502,7 @@ public class GameService {
 		launchGameWhenReady(gs);
 		for (PlayerDTO player : gameStateToGameInfo(gs, p.getId(), true).getPlayerInfo()) {
 			if (player.getName().equals(playerName)) {
-				
+
 				return player;
 			}
 		}
@@ -646,7 +644,8 @@ public class GameService {
 	}
 
 	public List<GameDTO> list() {
-		return gameHolderService.getGameStateList().stream().map(gs -> gameStateToGameInfo(gs, null, false)).collect(Collectors.toList());
+		return gameHolderService.getGameStateList().stream().map(gs -> gameStateToGameInfo(gs, null, false))
+				.collect(Collectors.toList());
 	}
 
 }
