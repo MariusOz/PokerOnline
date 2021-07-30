@@ -295,7 +295,6 @@ public class GameService {
 		}
 		gs.setCurrentPlayer(findFirstPlayer(gs));
 		gs.setBeginPlayerAction(LocalDateTime.now());
-		LOGGER.info(gs.getCurrentPhase().toString() + " : New first player is " + gs.getCurrentPlayer().getName());
 		switch (gs.getCurrentPhase()) {
 		case PRE_FLOP:
 			break;
@@ -312,6 +311,7 @@ public class GameService {
 			break;
 		default:
 		}
+		LOGGER.info(gs.getCurrentPhase().toString() + " : " + gs.getBoard().getCommunityCards() + " , New first player is " + gs.getCurrentPlayer().getName());
 	}
 
 	private PhaseEnum getNextPhaseEnum(PhaseEnum phase) {
