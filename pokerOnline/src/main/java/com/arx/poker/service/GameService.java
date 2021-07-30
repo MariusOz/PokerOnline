@@ -87,7 +87,7 @@ public class GameService {
 		deck.add(new Card(13, ColorEnum.DIAMOND));
 		deck.add(new Card(14, ColorEnum.DIAMOND));
 		Collections.shuffle(deck);
-		LOGGER.info("The deck is full and shuffled");
+//		LOGGER.info("The deck is full and shuffled");
 		// détermine l'ordre de jeu (premier joueur)
 		// vider la table des cartes du round précédent
 		//
@@ -103,7 +103,6 @@ public class GameService {
 			player.getPrivateHand().clear();
 			player.getPrivateHand().add(gameState.getDeck().remove(0));
 			player.getPrivateHand().add(gameState.getDeck().remove(0));
-			LOGGER.info("cartes de " + player.getName() + " : " + player.getPrivateHand().toString());
 		}
 	}
 
@@ -282,6 +281,11 @@ public class GameService {
 				gs.getPlayersInGame().add(p);
 			}
 		}
+
+		for (Player p : gs.getPlayersInGame()) {
+			LOGGER.info(p.getName() + " -- fonds: " + p.getFunds() + ", mise:" + p.getBet() + ", cartes: "
+					+ p.getPrivateHand());
+		}
 	}
 
 	private void initPhase(GameState gs) {
@@ -400,7 +404,6 @@ public class GameService {
 		return gameState.getPlayersInGame().contains(player);
 	}
 
-	// TODO faire un testU
 	private Player nextPlayer(GameState gs) {
 		// trouver le prochaine joueur à jouer ou null si le tour est terminé
 
