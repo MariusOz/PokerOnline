@@ -265,6 +265,9 @@ public class GameService {
 	}
 
 	private void initRound(GameState gs) {
+		gs.setCurrentRound(gs.getCurrentRound() + 1);
+		LOGGER.info("Début du round: " + gs.getCurrentRound());
+		
 		initDeck(gs);
 		gs.getBoard().getCommunityCards().clear();
 		dealCardsToPlayer(gs);
@@ -272,7 +275,6 @@ public class GameService {
 		LOGGER.info("New dealer is " + gs.getDealer().getName());
 		betBlinds(gs);
 		gs.setCurrentPhase(PhaseEnum.PRE_FLOP);
-		gs.setCurrentRound(gs.getCurrentRound() + 1);
 		initPhase(gs);
 		
 		//remettre les joeurs couchés en jeu

@@ -31,7 +31,7 @@ public class SchedulerControler {
 	@Scheduled(fixedRate = 5000)
 	public void abortAllLongTurn() {
 
-		LOGGER.info("début du scheduler");
+//		LOGGER.info("début du scheduler");
 		for (GameState gs : games.getGameStateList()) {
 			abortLongTurn(gs);
 		}
@@ -44,8 +44,8 @@ public class SchedulerControler {
 		if (dateDebutActionJoueur != null && GameStateStatusEnum.IN_PROGRESS.equals(gs.getStatus())) {
 			LocalDateTime dateNow = LocalDateTime.now();
 			Player currentPlayer = gs.getCurrentPlayer();
-			LOGGER.info("il est : " + dateNow + ", c'est au tour de " + gs.getCurrentPlayer().getName()
-					+ " et son tour a commencé à " + dateDebutActionJoueur);
+//			LOGGER.info("il est : " + dateNow + ", c'est au tour de " + gs.getCurrentPlayer().getName()
+//					+ " et son tour a commencé à " + dateDebutActionJoueur);
 
 			if (dateDebutActionJoueur.plusSeconds(turnMaxDelaySecond).isBefore(dateNow)) {
 				gameService.reactToPlayerAction(gs.getId(), currentPlayer.getId(), ActionEnum.FOLD);
