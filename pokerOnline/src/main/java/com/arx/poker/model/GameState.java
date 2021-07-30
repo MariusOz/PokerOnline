@@ -3,9 +3,6 @@ package com.arx.poker.model;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
-import com.arx.poker.service.GameStateStatusEnum;
-import com.arx.poker.service.PhaseEnum;
-
 public class GameState {
 
 	private int id;

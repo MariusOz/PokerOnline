@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.arx.poker.model.Card;
+import com.arx.poker.model.ColorEnum;
 import com.arx.poker.model.FlushPokerHand;
 import com.arx.poker.model.FourOfAKindPokerHand;
 import com.arx.poker.model.FullHousePokerHand;
@@ -26,9 +27,6 @@ import com.arx.poker.model.TwoPairPokerHand;
 
 @Component
 public class HandService {
-
-	// un service n'a pas de variable
-	private static final Logger LOGGER = LoggerFactory.getLogger(HandService.class);
 
 	public PokerHand findBestCombination(List<Card> cards) {
 

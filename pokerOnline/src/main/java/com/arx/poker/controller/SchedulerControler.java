@@ -1,8 +1,6 @@
-package com.arx.poker.service;
+package com.arx.poker.controller;
 
 import java.time.LocalDateTime;
-
-import javax.print.attribute.standard.DateTimeAtCompleted;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +9,11 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.arx.poker.model.GameState;
+import com.arx.poker.model.GameStateStatusEnum;
 import com.arx.poker.model.Player;
+import com.arx.poker.service.ActionEnum;
+import com.arx.poker.service.GameHolderService;
+import com.arx.poker.service.GameService;
 
 @Component
 public class SchedulerControler {
@@ -42,13 +44,13 @@ public class SchedulerControler {
 		if (dateDebutActionJoueur != null && GameStateStatusEnum.IN_PROGRESS.equals(gs.getStatus())) {
 			LocalDateTime dateNow = LocalDateTime.now();
 			Player currentPlayer = gs.getCurrentPlayer();
-			LOGGER.info("il est : " + dateNow + ", c'est au tour de " + gs.getCurrentPlayer().getName() + " et son tour a commencé à " + dateDebutActionJoueur);
+			LOGGER.info("il est : " + dateNow + ", c'est au tour de " + gs.getCurrentPlayer().getName()
+					+ " et son tour a commencé à " + dateDebutActionJoueur);
 
 			if (dateDebutActionJoueur.plusSeconds(turnMaxDelaySecond).isBefore(dateNow)) {
 				gameService.reactToPlayerAction(gs.getId(), currentPlayer.getId(), ActionEnum.FOLD);
 				LOGGER.info(currentPlayer.getName()
 						+ " à été inactif trop longtemps, il/elle ne participe plus a ce tour de jeu");
-				
 
 			}
 		}

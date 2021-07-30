@@ -11,9 +11,9 @@ public class PokerHand implements Comparable {
 	private final Integer thirdHighestValue;
 	private final Integer fourthHighestValue;
 	private final Integer fifthHighestValue;
-	
-	protected PokerHand(PokerHandEnum pokerHandEnum, Integer highestValue, Integer secondHighestValue, Integer thirdHighestValue,
-			Integer fourthHighestValue, Integer fifthHighestValue) {
+
+	protected PokerHand(PokerHandEnum pokerHandEnum, Integer highestValue, Integer secondHighestValue,
+			Integer thirdHighestValue, Integer fourthHighestValue, Integer fifthHighestValue) {
 		super();
 		this.pokerHandEnum = pokerHandEnum;
 		this.highestValue = highestValue;
@@ -34,9 +34,8 @@ public class PokerHand implements Comparable {
 		int thirdHighValue;
 		int fourthHighValue;
 		int fifthHighValue;
-		
-		if (comparedToOtherHand == 0) 
-		{
+
+		if (comparedToOtherHand == 0) {
 			switch (pokerHandEnum) {
 			case STRAIGHT_FLUSH:
 			case STRAIGHT:
@@ -46,7 +45,7 @@ public class PokerHand implements Comparable {
 				firstHighValue = Integer.compare(highestValue, other.highestValue);
 				if (firstHighValue == 0) {
 					return Integer.compare(secondHighestValue, other.secondHighestValue);
-				}else {
+				} else {
 					return firstHighValue;
 				}
 			case THREE_OF_A_KIND:
@@ -54,86 +53,84 @@ public class PokerHand implements Comparable {
 				firstHighValue = Integer.compare(highestValue, other.highestValue);
 				if (firstHighValue == 0) {
 					secondHighValue = Integer.compare(secondHighestValue, other.secondHighestValue);
-					if(secondHighValue == 0) {
+					if (secondHighValue == 0) {
 						return Integer.compare(thirdHighestValue, other.thirdHighestValue);
-					}else {
+					} else {
 						return secondHighValue;
 					}
-				}else {
+				} else {
 					return firstHighValue;
 				}
 			case ONE_PAIR:
 				firstHighValue = Integer.compare(highestValue, other.highestValue);
 				if (firstHighValue == 0) {
 					secondHighValue = Integer.compare(secondHighestValue, other.secondHighestValue);
-					if(secondHighValue == 0) {
+					if (secondHighValue == 0) {
 						thirdHighValue = Integer.compare(thirdHighestValue, other.thirdHighestValue);
 						if (thirdHighValue == 0) {
 							return Integer.compare(fourthHighestValue, other.fourthHighestValue);
-						}else {
+						} else {
 							return thirdHighValue;
 						}
-					}else {
+					} else {
 						return secondHighValue;
 					}
-				}else {
+				} else {
 					return firstHighValue;
 				}
-				
+
 			case FLUSH:
 			case HIGH_HAND:
 				firstHighValue = Integer.compare(highestValue, other.highestValue);
 				if (firstHighValue == 0) {
 					secondHighValue = Integer.compare(secondHighestValue, other.secondHighestValue);
-					if(secondHighValue == 0) {
+					if (secondHighValue == 0) {
 						thirdHighValue = Integer.compare(thirdHighestValue, other.thirdHighestValue);
 						if (thirdHighValue == 0) {
 							fourthHighValue = Integer.compare(fourthHighestValue, other.fourthHighestValue);
 							if (fourthHighValue == 0) {
 								return Integer.compare(fifthHighestValue, other.fifthHighestValue);
-							}else {
+							} else {
 								return fourthHighValue;
 							}
-						}else {
+						} else {
 							return thirdHighValue;
 						}
-					}else {
+					} else {
 						return secondHighValue;
 					}
-				}else {
+				} else {
 					return firstHighValue;
 				}
-				
+
 			default:
 				throw new IllegalStateException("Cas de main non géré, ne devrais pas se produire.");
 			}
-		}else {
+		} else {
 			return comparedToOtherHand * -1;
 		}
 	}
+
 	public PokerHandEnum getPokerHandEnum() {
 		return pokerHandEnum;
 	}
-	
+
 	public int getHighestValue() {
 		return highestValue;
 	}
-	
+
 	public int getSecondHighestValue() {
 		return secondHighestValue;
 	}
-	
-	
+
 	public int getThirdHighestValue() {
 		return thirdHighestValue;
 	}
-	
-	
+
 	public int getFourthHighestValue() {
 		return fourthHighestValue;
 	}
-	
-	
+
 	public int getFifthHighestValue() {
 		return fifthHighestValue;
 	}

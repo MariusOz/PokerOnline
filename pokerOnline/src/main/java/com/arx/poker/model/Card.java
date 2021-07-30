@@ -1,7 +1,5 @@
 package com.arx.poker.model;
 
-import com.arx.poker.service.ColorEnum;
-
 public class Card {
 
 	private final int number;

@@ -13,8 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.arx.poker.model.Card;
+import com.arx.poker.model.ColorEnum;
 import com.arx.poker.model.GameDTO;
 import com.arx.poker.model.GameState;
+import com.arx.poker.model.GameStateStatusEnum;
+import com.arx.poker.model.PhaseEnum;
 import com.arx.poker.model.Player;
 import com.arx.poker.model.PlayerDTO;
 import com.arx.poker.model.Pot;
@@ -638,6 +641,10 @@ public class GameService {
 
 	private boolean gameOver(GameState gameState) {
 		return gameState.getPlayers().size() == 1;
+	}
+
+	public List<GameDTO> list() {
+		return gameHolderService.getGameStateList().stream().map(gs -> gameStateToGameInfo(gs, null, false)).collect(Collectors.toList());
 	}
 
 }

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.arx.poker.model.Card;
+import com.arx.poker.model.ColorEnum;
 import com.arx.poker.model.FlushPokerHand;
 import com.arx.poker.model.FourOfAKindPokerHand;
 import com.arx.poker.model.FullHousePokerHand;
@@ -19,7 +20,6 @@ import com.arx.poker.model.StraightFlushPokerHand;
 import com.arx.poker.model.StraightPokerHand;
 import com.arx.poker.model.ThreeOfAKindPokerHand;
 import com.arx.poker.model.TwoPairPokerHand;
-import com.arx.poker.service.ColorEnum;
 import com.arx.poker.service.HandService;
 import com.arx.poker.service.PokerHandEnum;
 

@@ -29,47 +29,48 @@ public class GameController {
 	// si un param est dans le path, c'est forcément un ID
 	@Autowired
 	private GameService gameService;
-	
-	@Autowired
-	private GameHolderService gameHolderService;
 
-	// TODO stoquer chaque partie pour pouvoir les récupérer
-	// est il possible de creer un array pour garder les parties 
+	// stoquer chaque partie pour pouvoir les récupérer
+	// est il possible de creer un array pour garder les parties
 	@PostMapping
 	public GameDTO createGame(@RequestParam("nbOfPlayer") int nbOfPlayer) throws Exception {
 		GameState gamestate = gameService.createGame(nbOfPlayer);
 		return gameService.gameStateToGameInfo(gamestate, null, false);
 	}
-	
+
 	@RequestMapping(value = "/{gameId}/player", method = RequestMethod.POST)
 	@ResponseBody
-	public PlayerDTO addPlayerToExistingGame(@PathVariable("gameId") Integer id, @RequestBody PlayerDTO player) throws Exception {
+	public PlayerDTO addPlayerToExistingGame(@PathVariable("gameId") Integer id, @RequestBody PlayerDTO player)
+			throws Exception {
 		// ajouter le nouveau joueur a l'arraylist de players pour la partie
 		return gameService.addPlayerToSpecificGame(id, player.getName());
 	}
-	
-	// faire un web service que tout les players appellent constament pour savoir si c'est leur tour de jeu 
-	// si oui joue, si non redemande
-	
+
+	/**
+	 * Get list of all games
+	 * 
+	 * @return
+	 */
 	@RequestMapping(method = RequestMethod.GET)
-	public List<GameState> gamesLists() {
-		return gameHolderService.getGameStateList();
+	public List<GameDTO> gamesLists() {
+		return gameService.list();
 	}
-	
+
 	@RequestMapping(value = "/{gameId}", method = RequestMethod.GET)
-	public GameDTO game(@PathVariable("gameId") int gameId,@RequestParam("playerId") Integer playerId) {
+	public GameDTO game(@PathVariable("gameId") int gameId, @RequestParam("playerId") Integer playerId) {
 		return gameService.getGame(gameId, playerId);
 	}
-	
-	@RequestMapping(value  = "/{gameId}/play", method = RequestMethod.POST)
-	public void move(@PathVariable("gameId") int gameId,@RequestParam("playerId") Integer playerId, @RequestParam("playerAction") String playerAction) {
+
+	@RequestMapping(value = "/{gameId}/play", method = RequestMethod.POST)
+	public void move(@PathVariable("gameId") int gameId, @RequestParam("playerId") Integer playerId,
+			@RequestParam("playerAction") String playerAction) {
 		// la partie dans laquel il joue
-		// verifier si le joueur qui joue est bien celui qui doit jouer 
+		// verifier si le joueur qui joue est bien celui qui doit jouer
 		// gérer son action (bet, fonds restants, stillInGame)
-		// passer au joueur d'après (si il existe) 
+		// passer au joueur d'après (si il existe)
 		// fin prématurer du round?
 		// dernier round?
 		gameService.reactToPlayerAction(gameId, playerId, ActionEnum.valueOf(playerAction));
 	}
-	
+
 }

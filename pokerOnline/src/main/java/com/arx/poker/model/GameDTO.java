@@ -2,8 +2,6 @@ package com.arx.poker.model;
 
 import java.util.List;
 
-import com.arx.poker.service.GameStateStatusEnum;
-import com.arx.poker.service.PhaseEnum;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
