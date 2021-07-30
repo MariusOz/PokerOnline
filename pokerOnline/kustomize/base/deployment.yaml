@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: poker-api
+spec:
+  revisionHistoryLimit: 3
+  template:
+    spec:
+      containers:
+        - name: java
+          image: "arxcf/pokeronline:latest"
+          imagePullPolicy: IfNotPresent
+          resources:
+            #limits:
+            #  cpu: 500m
+            #  memory: 4Gi
+            requests:
+              cpu: 50m
+              memory: 1Gi
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
